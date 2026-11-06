@@ -1,4 +1,4 @@
-# tiny-llm-from-scratch
+# wlj-llm
 
 不调用 `transformers` 的模型类，从 `nn.Linear` 开始手写一个 **63.91M** 的 decoder-only 语言模型；
 配上从零实现的后训练链路（SFT / LoRA / DPO / PPO / GRPO）和一套 **MoE 分支**（198.42M）。
@@ -9,6 +9,10 @@
 - `pytest -q` → **20 passed**
 - 稠密 63,912,192 参数 / MoE 198,416,640 参数，逐位对得上 Llama 族同规模配置
 - 训练与推理两条分支的 logits 差 **0.000e+00**（带/不带 KV Cache 必须完全一致）
+
+```bash
+git clone https://github.com/wulinjin123/wlj-llm.git
+```
 
 ---
 

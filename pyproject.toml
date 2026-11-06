@@ -1,5 +1,5 @@
 [project]
-name = "tiny-llm-from-scratch"
+name = "wlj-llm"
 version = "0.1.0"
 description = "从零手写 63.91M decoder-only 语言模型"
 requires-python = ">=3.11"
