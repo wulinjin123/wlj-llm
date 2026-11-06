@@ -1,0 +1,10 @@
+# minimal deps for this project
+# torch 已装好（2.6.0+cu124），如需重装：
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0
+transformers==4.57.6
+datasets==3.6.0
+tokenizers==0.22.2
+numpy>=1.26
+swanlab>=0.9
+pytest>=8.0

@@ -1,0 +1,20 @@
+{
+  "_comment": "MiniMind 同级配置：768 宽 × 8 层 ≈ 64M 参数。4060 8GB 上实测峰值 4.62GB（bs24/seq340）",
+  "hidden_size": 768,
+  "num_hidden_layers": 8,
+  "num_attention_heads": 8,
+  "num_key_value_heads": 4,
+  "head_dim": 96,
+  "hidden_act": "silu",
+  "intermediate_size": 2432,
+  "vocab_size": 6400,
+  "max_position_embeddings": 32768,
+  "rope_theta": 1000000.0,
+  "rms_norm_eps": 1e-06,
+  "dropout": 0.0,
+  "flash_attn": true,
+  "tie_word_embeddings": true,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "pad_token_id": 0
+}

@@ -1,0 +1,30 @@
+{
+  // 解释器固定到这个 conda 环境，别用 PATH 里那个沙箱 Python
+  "python.defaultInterpreterPath": "D:\\Anaconda\\envs\\minimind\\python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+
+  // Windows 上默认终端用 cmd，避免 Git Bash 命中的 python 不是 conda 的
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+
+  // 中文字符 + 编码
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.autoGuessEncoding": false,
+
+  // Python 静态检查（写张量时能提前发现维度错误）
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+
+  // Jupyter 的根目录设成工程根，方便 %run 和相对路径
+  "jupyter.notebookFileRoot": "${workspaceFolder}",
+
+  // 训练日志里有大量进度条，别让终端刷得太快
+  "terminal.integrated.scrollback": 20000,
+
+  // 排除大目录，资源管理器里清爽一点
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  }
+}

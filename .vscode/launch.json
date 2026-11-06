@@ -1,0 +1,634 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // 最常用：打开某个文件，直接 F5 跑它
+      "name": "运行当前文件",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 每天开工第一条：看自己做到第几节
+      "name": "① 进度自检",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 20 个断言全跑一遍
+      "name": "② 全部测试",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests", "-q"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 超快验证：只跑 400 步就收工，实测 1 分 51 秒，loss 8.90 → 4.66
+      // 产物在 out_quick/，不污染正式训练的 out/
+      "name": "③ 训练-超快验证（2分钟，400步）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_pretrain.py",
+      "args": [
+        "--data_path", "D:/Projects/minimind/dataset/pretrain_20k.jsonl",
+        "--epochs", "1",
+        "--batch_size", "24",
+        "--max_seq_len", "256",
+        "--accumulation_steps", "1",
+        "--max_steps", "400",
+        "--log_interval", "50",
+        "--save_interval", "0",
+        "--no_swanlab",
+        "--out_dir", "out_quick"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 快速档：2 万条 × 3 epoch，约 15 分钟，loss 8.9 → 5 以下
+      "name": "④ 训练-快速档（2万条，15分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_pretrain.py",
+      "args": [
+        "--data_path", "D:/Projects/minimind/dataset/pretrain_20k.jsonl",
+        "--epochs", "3",
+        "--batch_size", "24",
+        "--max_seq_len", "340",
+        "--accumulation_steps", "1",
+        "--log_interval", "20",
+        "--save_interval", "300",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 正式训练：全量 127 万条，约 5 小时，挂机跑
+      // --no_swanlab 必须加：swanlab 没登录，会在终端卡住等输入
+      "name": "⑤ 训练-正式（全量，约5小时）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_pretrain.py",
+      "args": [
+        "--data_path", "D:/Projects/minimind/dataset/pretrain_t2t_mini.jsonl",
+        "--epochs", "1",
+        "--batch_size", "24",
+        "--max_seq_len", "340",
+        "--accumulation_steps", "4",
+        "--log_interval", "50",
+        "--save_interval", "1000",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 断点续训：只有 out/pretrain_resume.pth 存在时才接得上
+      // 参数必须和上面 ④ 完全一致，否则步数/学习率调度对不上
+      "name": "⑥ 训练-断点续训",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_pretrain.py",
+      "args": [
+        "--data_path", "D:/Projects/minimind/dataset/pretrain_t2t_mini.jsonl",
+        "--epochs", "1",
+        "--batch_size", "24",
+        "--max_seq_len", "340",
+        "--accumulation_steps", "4",
+        "--log_interval", "50",
+        "--save_interval", "1000",
+        "--from_resume", "1",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 评估正式权重：算 loss/ppl + 出生成样例
+      "name": "⑦ 评估-正式权重（out/）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/eval_pretrain.py",
+      "args": [
+        "--ckpt", "out/pretrain_epoch1.pth",
+        "--limit", "100",
+        "--gen",
+        "--max_new_tokens", "48",
+        "--save_json", "out/eval_epoch1.json"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 评估超快权重：实测 loss 4.40 / ppl 81.8 / 15.6 秒
+      "name": "⑧ 评估-超快权重（out_quick/）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/eval_pretrain.py",
+      "args": [
+        "--ckpt", "out_quick/pretrain_epoch1.pth",
+        "--limit", "100",
+        "--max_seq_len", "256",
+        "--gen",
+        "--max_new_tokens", "32",
+        "--save_json", "out_quick/eval.json"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // MoE 超快验证：4 专家 × 8 层，参数 63.91M → 198.42M
+      // 实测 2 分 00 秒（400 步），loss 8.9254 → 约 5.5，aux_loss 稳定 0.0046
+      // --use_moe 1 是关键，不加就还是稠密模型
+      "name": "⑨ MoE-训练超快验证（2分钟，400步）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_pretrain.py",
+      "args": [
+        "--data_path", "D:/Projects/minimind/dataset/pretrain_20k.jsonl",
+        "--epochs", "1",
+        "--batch_size", "12",
+        "--max_seq_len", "256",
+        "--accumulation_steps", "1",
+        "--max_steps", "400",
+        "--log_interval", "100",
+        "--save_interval", "0",
+        "--no_swanlab",
+        "--use_moe", "1",
+        "--out_dir", "out_moe"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // MoE 评估：--use_moe 1 必须和训练时一致，否则 strict 会报 missing keys: experts.0...
+      // 实测 loss 5.25 / ppl 190 / 生成约 50 tok/s
+      "name": "⑩ MoE-评估权重（out_moe/）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/eval_pretrain.py",
+      "args": [
+        "--ckpt", "out_moe/pretrain_epoch1.pth",
+        "--use_moe", "1",
+        "--limit", "100",
+        "--max_seq_len", "256",
+        "--gen",
+        "--max_new_tokens", "32",
+        "--save_json", "out_moe/eval.json"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // SFT 快速验证：跑 30 步就存 sft_epoch1.pth，用来确认链路通。
+      // 必须给 --from_weight，否则等于从随机初始化开始，loss 会停在 8.9 附近
+      "name": "⑪ SFT-快速验证（30步，约1分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_sft.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\sft_20k.jsonl",
+        "--from_weight", "out_quick/pretrain_epoch1.pth",
+        "--batch_size", "8",
+        "--max_seq_len", "768",
+        "--max_steps", "30",
+        "--log_interval", "5",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // SFT 正式：1 epoch = 20000/8 = 2500 步，实测 210 ms/步（200 步跑 42 秒），约 9 分钟。
+      // 显存实测 4.05 GB（稠密）；权重存到 out/sft_epoch1.pth，不覆盖 pretrain 的
+      "name": "⑫ SFT-正式（1 epoch 2500步，约9分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_sft.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\sft_20k.jsonl",
+        "--from_weight", "out_quick/pretrain_epoch1.pth",
+        "--batch_size", "8",
+        "--max_seq_len", "768",
+        "--save_interval", "500",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // LoRA 快速验证：跑 20 步就存 lora_demo.pth（0.76MB），确认挂载和保存链路通。
+      // 前提：先跑过 ⑫，得到 out/sft_epoch1.pth；没跑过就把 --from_weight 换成 out_quick/pretrain_epoch1.pth
+      "name": "⑬ LoRA-快速验证（20步，约1分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_lora.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\sft_20k.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--out_dir", "out",
+        "--lora_name", "lora_demo",
+        "--lora_rank", "16",
+        "--batch_size", "8",
+        "--max_seq_len", "768",
+        "--max_steps", "20",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // LoRA 正式：3 epoch = 7500 步，实测约 350 ms/步，约 45 分钟。
+      // 只训 0.3932M 参数（0.611%），显存约 2.5GB。
+      // 注意 LoRA 不比 SFT 快多少：反向仍要过全部 8 层，省的是显存和权重体积
+      "name": "⑭ LoRA-正式（3 epoch，约45分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_lora.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\sft_20k.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--out_dir", "out",
+        "--lora_name", "lora_demo",
+        "--lora_rank", "16",
+        "--batch_size", "8",
+        "--max_seq_len", "768",
+        "--epochs", "3",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // PPO 快速验证：8 条样本、生成 64 token，约 10 秒，只看链路通不通。
+      // 四个模型（actor/old/ref/critic）各占一份权重，显存峰值约 3.4GB。
+      // 用 pretrain 权重只是为了跑通，生成的是胡话（正常现象）。
+      "name": "⑮ PPO-快速验证（8条，约10秒）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_ppo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\rlaif.jsonl",
+        "--from_weight", "out_quick/pretrain_epoch1.pth",
+        "--max_steps", "8",
+        "--max_gen_len", "64",
+        "--batch_size", "2",
+        "--accumulation_steps", "2",
+        "--log_interval", "1",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // PPO 正式：200 条样本、生成 256 token，实测约 1.7 秒/条，
+      // 加启动开销总计约 6 分钟（显存峰值约 3.4GB）。
+      // 必须先跑过 SFT 拿到 out/sft_epoch1.pth，用 pretrain 权重做 RL 没有意义
+      // （基座本身不会说话，奖励全是负的，学不到东西）。
+      // 关注指标：reward 应缓慢上升、kl_ref 不应爆涨（> 2 说明跑飞了）、ratio 在 1 附近。
+      "name": "⑯ PPO-正式（200条 gen256，约5分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_ppo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\rlaif.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--max_steps", "200",
+        "--max_gen_len", "256",
+        "--batch_size", "4",
+        "--accumulation_steps", "4",
+        "--save_interval", "100",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // DPO 快速验证：20 步，约 15 秒。只看链路通不通。
+      // 关键自检：第一步的 loss 必须约等于 ln2 = 0.6931
+      // （policy 和 ref 权重相同 -> logits=0 -> -logsigmoid(0)=ln2）。
+      // 偏离 0.693 说明 policy/ref 没有从同一份权重起步，或 mask 算错了。
+      "name": "⑰ DPO-快速验证（20步，约15秒）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_dpo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\dpo.jsonl",
+        "--from_weight", "out_quick/pretrain_epoch1.pth",
+        "--max_steps", "20",
+        "--log_interval", "5",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // DPO 正式：500 步，实测 0.25 秒/步、显存 3962MB，约 2 分钟。
+      // 必须先跑过 SFT 拿到 out/sft_epoch1.pth（用 pretrain 权重做 DPO 没有意义，
+      // 基座对 chosen/rejected 本来就没有偏好）。
+      // 关注指标：loss 应从 0.693 下降，acc（chosen 隐含奖励 > rejected 的比例）
+      // 应从 50% 附近稳步上升。acc 长期不动说明 beta 或学习率不合适。
+      "name": "⑱ DPO-正式（500步，约2分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_dpo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\dpo.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--max_steps", "500",
+        "--save_interval", "250",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // SFT 早停版：切 2% 数据做验证集，每 500 步评一次，连续 2 次不改善就停。
+      // 背景：⑫ 那版跑满 2500 步后，训练域 assistant ppl 从 292.6 降到 19.2，
+      // 但域外留出集从 1015 涨到 1288 —— 后 1000 步在拟合噪声。
+      // 这版会在拐头处停下，并把最好那份另存为 out/sft_best.pth。
+      // 注意：验证集与训练集同分布，只能防「同分布过拟合」；
+      // 想看过拟合导致的泛化退化，得用 _tmp/eval_sft_fmt.py 在域外数据上评。
+      "name": "⑲ SFT-带早停（验证集2%，约10分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_sft.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\sft_20k.jsonl",
+        "--from_weight", "out_quick/pretrain_epoch1.pth",
+        "--max_steps", "2500",
+        "--val_ratio", "0.02",
+        "--eval_interval", "500",
+        "--patience", "2",
+        "--save_interval", "500",
+        "--out_dir", "out",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // DPO 修复版：NLL 正则治 likelihood displacement + 生成守卫防训崩。
+      // 实测不加这两项时，lr 5e-6 跑 1000 步会把模型烧掉（生成只剩「人工智能是AI」，
+      // 而 loss 全程稳在 0.69，从 loss 完全看不出来）。
+      // 守卫每 200 步真采样一次，有效输出 < 8 token 就判定崩坏，
+      // 存成 dpo_..._broken_stepN.pth 并主动停下（退出码 0，不是报错）。
+      "name": "⑳ DPO-带NLL正则与守卫（lr1e-6，800步）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_dpo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\dpo.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--learning_rate", "1e-6",
+        "--nll_coef", "0.2",
+        "--gen_guard_interval", "200",
+        "--max_steps", "800",
+        "--save_interval", "400",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // GRPO 快速验证：1 步 × 2 条采样，只确认链路能跑通（显存约 2GB）。
+      // 关注：reward 有值、avg response len > 0、loss 不是 nan。
+      "name": "㉑ GRPO-快速验证（1步，约1分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_grpo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\rlaif.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--num_generations", "2",
+        "--max_gen_len", "64",
+        "--max_steps", "1",
+        "--log_interval", "1",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // GRPO 正式：G=4 组采样 × gen256。实测稠密 G4/gen128 峰值 2.13GB，
+      // gen256 约 3.4GB，8GB 够用。
+      // ⚠️ 不要加 --use_moe 1：MoE 版 G6/gen256 实测 8.67GB，8GB 必 OOM。
+      // 关注：reward 均值上升、KL 不爆涨、avg response len 不塌到 0。
+      "name": "㉒ GRPO-正式（200步 G4 gen256，约15分钟）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/train_grpo.py",
+      "args": [
+        "--data_path", "D:\\Projects\\minimind\\dataset\\rlaif.jsonl",
+        "--from_weight", "out/sft_epoch1.pth",
+        "--num_generations", "4",
+        "--max_gen_len", "256",
+        "--batch_size", "1",
+        "--max_steps", "200",
+        "--save_interval", "100",
+        "--no_swanlab"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // 验收总入口：一次把 baseline / SFT / DPO 三个权重放到同一把尺子上比。
+      // 输出三行指标（lm / holdout / indomain）+ 每个权重同一串随机数的生成样例。
+      // 判读：SFT 相对 baseline，indomain 必须大降（5.68→2.96 那种量级）才算学到；
+      //       三项同时暴涨 = 训崩（DPO 不加 NLL 正则会这样）。
+      // 全程约 1 分钟，显存 < 2GB，不想吵就只跑这条。
+      "name": "㉓ 评测-三把尺子对比（baseline/SFT/DPO）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/eval_stages.py",
+      "args": [
+        "--ckpt", "out_quick/pretrain_epoch1.pth",
+        "--ckpt", "out/sft_epoch1.pth",
+        "--ckpt", "out/dpo_768.pth",
+        "--limit", "100",
+        "--gen",
+        "--max_new_tokens", "40",
+        "--save_json", "out/eval_stages.json"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    },
+    {
+      // MoE 体检：--use_moe 1 必须带上，且只能评 MoE 权重（一次运行所有 ckpt 共用同一结构）。
+      // 判读：MoE 与稠密 baseline 的 lm 差距应在 0.2 以内；差距过大说明专家没训起来。
+      // 加载 2.3G 权重、显存约 2.5GB，约 40 秒。
+      "name": "㉔ 评测-MoE 体检（out_moe/）",
+      "type": "debugpy",
+      "python": "D:\\Anaconda\\envs\\minimind\\python.exe",
+      "request": "launch",
+      "program": "${workspaceFolder}/trainer/eval_stages.py",
+      "args": [
+        "--ckpt", "out_moe/pretrain_epoch1.pth",
+        "--use_moe", "1",
+        "--limit", "100",
+        "--gen",
+        "--max_new_tokens", "40",
+        "--save_json", "out_moe/eval_stages.json"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "justMyCode": false
+    }
+  ]
+}

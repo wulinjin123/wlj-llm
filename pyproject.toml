@@ -1,0 +1,35 @@
+[project]
+name = "tiny-llm-from-scratch"
+version = "0.1.0"
+description = "从零手写 63.91M decoder-only 语言模型"
+requires-python = ">=3.11"
+dependencies = [
+    "torch==2.6.0",
+    "transformers==4.57.6",
+    "datasets==3.6.0",
+    "tokenizers==0.22.2",
+    "numpy>=1.26",
+    "swanlab>=0.9",
+    "pytest>=8.0",
+]
+
+# 这是个"只装依赖、不打包自己"的项目。
+# 不加这行，uv sync 会去找 build backend 然后报错。
+[tool.uv]
+package = false
+
+# torch 的 CUDA 版必须从 PyTorch 官方源装，PyPI 上的是 CPU 版
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu124" }]
+torchvision = [{ index = "pytorch-cu124" }]
+
+# 说明：
+# 现在你的环境在 D:\Anaconda\envs\minimind（已装好 6GB 的 torch），不要跑 `uv sync`，
+# 那会在项目里新建 .venv 并重新下载 2.5GB 的 torch。日常用：
+#   uv pip install --python D:\Anaconda\envs\minimind\python.exe <包名>
+# 只有在换机器、或想彻底重建环境时，才用 `uv sync`。

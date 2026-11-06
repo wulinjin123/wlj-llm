@@ -1,0 +1,19 @@
+# 权重与检查点（单个 130MB~800MB，绝不进 git）
+out/
+out_*/
+out-*/
+checkpoints/
+*.pth
+*.safetensors
+
+# 数据（3GB，用绝对路径引用 ../minimind/dataset）
+dataset/*.jsonl
+
+# 运行产物
+runs/
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.vscode/*.local.json
